@@ -1,0 +1,63 @@
+# Visual Studio and IDE state
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.rsuser
+*.userosscache
+*.sln.docstates
+*.csproj.user
+
+# .NET build output
+**/[Bb]in/
+**/[Oo]bj/
+**/[Dd]ebug/
+**/[Rr]elease/
+**/artifacts/
+**/publish/
+
+# Test and coverage output
+**/[Tt]est[Rr]esults/
+**/coverage/
+coverage*.json
+coverage*.xml
+coverage*.info
+*.coverage
+*.coveragexml
+BenchmarkDotNet.Artifacts/
+
+# NuGet generated artifacts
+**/packages/
+*.nupkg
+*.snupkg
+*.nuget.props
+*.nuget.targets
+
+# Logs and temporary files
+**/[Ll]ogs/
+*.log
+*.tmp
+*.temp
+~$*
+*~
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+appsettings.Local.json
+appsettings.*.Local.json
+secrets.json
+*.pfx
+*.key
+
+# Local SQL Server files and backups
+*.mdf
+*.ldf
+*.bak
+
+# Operating system files
+.DS_Store
+Thumbs.db
+Desktop.ini
