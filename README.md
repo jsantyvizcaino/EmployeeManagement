@@ -98,7 +98,6 @@ npm run dev
 Finalmente, abrir `http://localhost:5173` e iniciar sesión con las credenciales
 de desarrollo indicadas en la siguiente sección.
 
-El frontend consume por defecto `https://localhost:7059/api/v1`.
 
 ## Credenciales de desarrollo
 
