@@ -1,9 +1,10 @@
 # Employee Management
 
-API REST para autenticación y administración de empleados, desarrollada con
-.NET 10 y SQL Server. El proyecto implementa una arquitectura por capas,
+Solución full stack para autenticación y administración de empleados. Incluye
+una API desarrollada con .NET 10 y SQL Server, y un frontend con React y
+TypeScript. El proyecto backend implementa una arquitectura por capas,
 CQRS con Mediator, validación transversal, persistencia Code First y
-autenticación JWT sin depender de un proveedor de identidad externo.
+autenticación JWT.
 
 ## Tecnologías
 
@@ -15,12 +16,13 @@ autenticación JWT sin depender de un proveedor de identidad externo.
 - SQL Server 2022 Developer sobre Docker.
 - Scalar y OpenAPI 3.1.
 - API Versioning.
+- React 19 con TypeScript 6 y Vite 8.
 
 ## Arquitectura
 
 
 
-La solución está dividida en cuatro proyectos:
+La solución backend sigue clean architecture:
 
 | Capa | Responsabilidad |
 |---|---|
@@ -29,13 +31,107 @@ La solución está dividida en cuatro proyectos:
 | **Infrastructure** | EF Core, repositorios, Unit of Work, JWT, hash de contraseñas, migraciones, SP y seed. |
 | **API** | Controllers, autorización, CORS, versionado, middleware de excepciones y OpenAPI. |
 
-Las referencias mantienen el sentido de las dependencias:
+El frontend está organizado por funcionalidades:
 
 ```text
-Application    → Domain
-Infrastructure → Application + Domain
-API            → Application + Infrastructure
+frontend/src/
+├── api/                 Tipos y cliente HTTP
+├── features/auth/       Inicio de sesión
+├── features/employees/  Listado, filtro y formulario
+├── App.tsx              Manejo de la sesión
+└── main.tsx             Punto de entrada
 ```
+
+
+## Ejecución local
+
+### Requisitos
+
+- .NET SDK 10.
+- Docker Desktop.
+- Node.js 20.19 o superior.
+
+Los siguientes comandos deben ejecutarse en orden desde la raíz del
+repositorio.
+
+### 1. Levantar SQL Server con Docker
+
+Abrir una terminal y ejecutar:
+
+```powershell
+docker compose up -d
+docker compose ps
+```
+
+El servicio `sqlserver` debe aparecer con estado `healthy` antes de continuar.
+Se utiliza SQL Server 2022 Developer en el puerto `1433` y un volumen
+persistente para conservar la información.
+
+### 2. Levantar el backend
+
+En la misma terminal, con SQL Server ya disponible:
+
+```powershell
+dotnet restore
+dotnet run --project .\EmployeeManagement.API\EmployeeManagement.API.csproj
+```
+
+Al iniciar, la API aplica las migraciones pendientes y ejecuta el seed de
+manera idempotente. Debe quedar disponible en:
+
+- API: `https://localhost:7059`
+- Scalar: `https://localhost:7059/scalar`
+- Health check: `https://localhost:7059/health`
+
+Mantener esta terminal abierta mientras se utiliza el frontend.
+
+### 3. Levantar el frontend
+
+Abrir una segunda terminal desde la raíz del repositorio y ejecutar:
+
+```powershell
+cd .\frontend
+npm install
+npm run dev
+```
+
+Finalmente, abrir `http://localhost:5173` e iniciar sesión con las credenciales
+de desarrollo indicadas en la siguiente sección.
+
+
+## Credenciales de desarrollo
+
+### Usuario de la aplicación
+
+```text
+Usuario:    admin
+Contraseña: ProCredit2026*
+```
+
+Para obtener el token:
+
+```http
+POST /api/v1/authentication/login
+Content-Type: application/json
+```
+
+```json
+{
+  "userName": "admin",
+  "password": "ProCredit2026*"
+}
+```
+
+
+### SQL Server local
+
+```text
+Servidor:   localhost,1433
+Base:       EmployeeManagementDb
+Usuario:    sa
+Contraseña: EmployeeManagement#2026
+```
+
 
 ## Patrones y decisiones técnicas
 
@@ -139,70 +235,8 @@ Los casos de uso retornan un contrato uniforme:
 | `pro.EmployeeSalaries` | Relación 1:1 con empleados. |
 
 
-## Ejecución local
-
-### Requisitos
-
-- .NET SDK 10.
-- Docker
-
-### 1. Levantar SQL Server
-
-Desde la raíz de la solución:
-
-```powershell
-docker compose up -d
-docker compose ps
-```
-
-Se utiliza SQL Server 2022 Developer y un volumen persistente.
-
-### 2. Ejecutar la API
-
-```powershell
-dotnet run --project .\EmployeeManagement.API\EmployeeManagement.API.csproj
-```
-
-Al iniciar, la API aplica las migraciones pendientes y ejecuta el seed de
-manera idempotente.
 
 
-
-## Credenciales de desarrollo
-
-### Usuario de la aplicación
-
-```text
-Usuario:    admin
-Contraseña: ProCredit2026*
-```
-
-Para obtener el token:
-
-```http
-POST /api/v1/authentication/login
-Content-Type: application/json
-```
-
-```json
-{
-  "userName": "admin",
-  "password": "ProCredit2026*"
-}
-```
-
-
-### SQL Server local
-
-```text
-Servidor:   localhost,1433
-Base:       EmployeeManagementDb
-Usuario:    sa
-Contraseña: EmployeeManagement#2026
-```
-
-> Estas credenciales y claves son exclusivamente para desarrollo local. En un
-> ambiente real deben suministrarse mediante secretos o variables de entorno.
 
 ## Endpoints
 
@@ -217,11 +251,7 @@ Contraseña: EmployeeManagement#2026
 
 ## Migraciones
 
-El repositorio incluye una herramienta local de EF Core:
 
-```powershell
-dotnet tool restore
-```
 
 Aplicar migraciones manualmente:
 
@@ -237,30 +267,3 @@ Migraciones actuales:
    de `pro.GetEmployees`.
 2. `UpdateGetEmployeesProcedureAreaFilter`: modifica el SP para filtrar por
    `AreaId`.
-
-## Comandos de Docker
-
-```powershell
-# Detener sin eliminar el contenedor
-docker compose stop
-
-# Volver a iniciarlo
-docker compose start
-
-# Eliminar el contenedor conservando el volumen
-docker compose down
-```
-
-No utilice `docker compose down --volumes` si desea conservar la base local.
-
-## Verificación realizada
-
-- Compilación Release sin errores ni advertencias.
-- Migraciones aplicadas sobre SQL Server en Docker.
-- Login válido e inválido.
-- Autorización Bearer y rechazo sin token.
-- Consultas de áreas, cargos y empleados.
-- Ejecución del SP con y sin filtro por área.
-- Validación de creación de empleado.
-- Detección de usuario duplicado.
-- Generación de OpenAPI, Scalar y health check.

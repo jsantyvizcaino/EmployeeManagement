@@ -1,13 +1,12 @@
-using System.Text.Json.Serialization;
 using Asp.Versioning;
-using EmployeeManagement.Application;
 using EmployeeManagement.API.Middleware;
 using EmployeeManagement.API.OpenApi;
-using EmployeeManagement.Domain.Dtos;
+using EmployeeManagement.Application;
 using EmployeeManagement.Domain.Models;
 using EmployeeManagement.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Scalar.AspNetCore;
+using System.Text.Json.Serialization;
 using AppEmptyResult = EmployeeManagement.Domain.Dtos.EmptyResult;
 
 var builder = WebApplication.CreateBuilder(args);
