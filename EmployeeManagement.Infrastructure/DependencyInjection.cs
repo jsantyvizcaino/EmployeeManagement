@@ -53,6 +53,7 @@ public static class DependencyInjection
                 }));
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IReadUnitOfWork, ReadUnitOfWork>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         services.AddSingleton<IPasswordHasherService, PasswordHasherService>();

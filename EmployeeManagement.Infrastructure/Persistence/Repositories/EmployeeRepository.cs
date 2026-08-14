@@ -20,4 +20,11 @@ public sealed class EmployeeRepository(AppDbContext context)
         => QueryWithDetails().FirstOrDefaultAsync(
             employee => employee.UserId == userId,
             cancellationToken);
+
+    public Task<bool> ExistsByDocumentNumberAsync(
+        string documentNumber,
+        CancellationToken cancellationToken = default)
+        => DbSet.AnyAsync(
+            employee => employee.DocumentNumber == documentNumber,
+            cancellationToken);
 }
