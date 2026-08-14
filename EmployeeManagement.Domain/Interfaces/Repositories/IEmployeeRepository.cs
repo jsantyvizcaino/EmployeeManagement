@@ -9,4 +9,8 @@ public interface IEmployeeRepository : IRepositoryBase<Employee>
     Task<Employee?> GetByUserIdAsync(
         long userId,
         CancellationToken cancellationToken = default);
+
+    Task<bool> ExistsByDocumentNumberAsync(
+        string documentNumber,
+        CancellationToken cancellationToken = default);
 }

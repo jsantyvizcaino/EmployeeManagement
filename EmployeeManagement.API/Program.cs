@@ -1,3 +1,4 @@
+using EmployeeManagement.Application;
 using EmployeeManagement.Domain.Models;
 using EmployeeManagement.Infrastructure;
 
@@ -11,6 +12,7 @@ var appSettings = builder.Configuration
 
 appSettings.CheckSettings();
 builder.Services.AddSingleton(appSettings);
+builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
 // Add services to the container.
